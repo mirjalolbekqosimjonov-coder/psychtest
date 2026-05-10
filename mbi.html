@@ -54,6 +54,14 @@
             cursor: pointer;
         }
         .finish-btn { background: #27ae60; color: white; font-weight: bold; }
+        .result { font-size: 1.4rem; margin: 15px 0; }
+        .recommendation { 
+            font-size: 1.25rem; 
+            background: rgba(255,255,255,0.2); 
+            padding: 20px; 
+            border-radius: 15px; 
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -75,7 +83,7 @@
     </div>
 
     <script>
-        const questions = [
+        const questions = [ /* oldingi 22 ta savol bir xil qoldi */ 
             "Ishim meni hissiy jihatdan holdan toydiradi.",
             "Ish kunining oxirida o'zimni butunlay tugagan his qilaman.",
             "Ertalab uyg'onganimda yangi ish kuni meni charchatishini his qilaman.",
@@ -120,7 +128,6 @@
 
         function selectAnswer(value) {
             scores[current] = value;
-            
             if (current < 21) {
                 setTimeout(() => {
                     current++;
@@ -140,42 +147,21 @@
 
         function finishTest() {
             const unanswered = scores.filter(s => s === null).length;
-            
             if (unanswered > 0) {
-                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
-                    return;
-                }
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) return;
             }
 
             let hc = scores.slice(0,9).reduce((a,b) => a + (b||0), 0);
             let dp = scores.slice(9,14).reduce((a,b) => a + (b||0), 0);
             let sy = scores.slice(14,22).reduce((a,b) => a + (b||0), 0);
 
-            let hc_h = hc <=16 ? "🟢 Past" : hc <=26 ? "🟡 O'rta" : "🔴 Yuqori";
-            let dp_h = dp <=6 ? "🟢 Past" : dp <=12 ? "🟡 O'rta" : "🔴 Yuqori";
-            let sy_h = sy >=39 ? "🟢 Yuqori (yaxshi)" : sy >=32 ? "🟡 O'rta" : "🔴 Past (muammo)";
+            let totalScore = hc + dp + (48 - sy); // Umumiy charchoq balli
 
             let recommendation = "";
+            let color = "";
 
-            if (hc >=27 || dp >=13) {
-                recommendation = "Yuqori charchoq aniqlandi. Ish yukini kamaytiring, psixolog yoki mutaxassis bilan maslahatlashing va dam olish kunlarini rejalashtiring.";
-            } else if (hc >=17 || dp >=7) {
-                recommendation = "O'rtacha charchoq darajasi. Har kuni o'zingizga vaqt ajrating, sport bilan shug'ullaning va ish bilan shaxsiy hayot muvozanatini saqlang.";
-            } else {
-                recommendation = "Charchoq darajasi past. Hozirgi muvozanatni saqlang va muntazam dam olishni davom ettiring. Zo'r ishlayapsiz!";
-            }
-
-            document.getElementById("question-container").innerHTML = `
-                <h2>Test tugadi!</h2>
-                <h3>Hissiy charchoq: <b>${hc}/54</b> — ${hc_h}</h3>
-                <h3>Depersonalizatsiya: <b>${dp}/30</b> — ${dp_h}</h3>
-                <h3>Shaxsiy yutuqlar: <b>${sy}/48</b> — ${sy_h}</h3>
-                <p><strong>Tavsiya:</strong> ${recommendation}</p>
-                <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
-            `;
-        }
-
-        showQuestion();
-    </script>
-</body>
-</html>
+            if (hc >= 27 || dp >= 13) {
+                recommendation = "Yuqori kasbiy charchoq holati aniqlandi. Ish yukini kamaytirish, dam olish va mutaxassis yordamini olish juda muhim.";
+                color = "#e74c3c";
+            } else if (hc >= 17 || dp >= 7) {
+                recommendation = "O'rtacha charchoq darajasi. Profilaktika choralari ko'ring: har kuni o'zingizga vaqt ajrating, sport bilan shug
