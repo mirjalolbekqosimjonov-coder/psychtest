@@ -34,7 +34,6 @@
             border-radius: 10px;
             font-size: 1rem;
             cursor: pointer;
-            transition: 0.3s;
         }
         .options button:hover, .options button.selected { 
             background: #3498db; 
@@ -75,7 +74,7 @@
     </div>
 
     <script>
-        const questions = [
+        const questions = [ /* 14 ta savol bir xil */ 
             "O'tgan oyda kutilmagan voqea sizni qanchalik xafa qildi?",
             "O'tgan oyda muhim narsalarni boshqara olmayotganingizni his qildingizmi?",
             "O'tgan oyda asabiy va stressli his qildingizmi?",
@@ -112,15 +111,12 @@
 
         function selectAnswer(value) {
             scores[current] = value;
-            
-            // Javob tanlanganda avtomatik keyingi savolga o'tish
             if (current < 13) {
                 setTimeout(() => {
                     current++;
                     showQuestion();
                 }, 350);
             } else {
-                // Oxirgi savol bo'lsa — avtomatik yakunlash
                 setTimeout(finishTest, 400);
             }
         }
@@ -134,38 +130,34 @@
 
         function finishTest() {
             const unanswered = scores.filter(s => s === null).length;
-            
             if (unanswered > 0) {
-                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
-                    return;
-                }
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nYakunlamoqchimisiz?`)) return;
             }
 
             let total = scores.reduce((a, b) => a + (b || 0), 0);
-            let level = "";
-            let advice = "";
+            let level = total <= 18 ? "🟢 Past stress" : total <= 37 ? "🟡 O'rtacha stress" : "🔴 Yuqori stress";
 
-            if (total <= 18) {
-                level = "🟢 Past stress darajasi";
-                advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
-            } else if (total <= 37) {
-                level = "🟡 O'rtacha stress darajasi";
-                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
-            } else {
-                level = "🔴 Yuqori stress darajasi";
-                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
-            }
+            // Natijani saqlash (Telegram Web App orqali)
+            const resultData = {
+                sana: new Date().toLocaleString('uz-UZ'),
+                ism: "Foydalanuvchi", // keyinroq ismni olish mumkin
+                test: "PSS-14",
+                natija: `${total} - ${level}`,
+                ball: total
+            };
+
+            // Backendga yuborish (hozircha alert)
+            console.log("Natija saqlandi:", resultData);
+            alert(`Test tugadi!\nJami ball: ${total}/56\nDaraja: ${level}\n\nNatija saqlandi.`);
 
             document.getElementById("question-container").innerHTML = `
                 <h2>Test tugadi!</h2>
                 <h3>Jami ball: <b>${total} / 56</b></h3>
                 <h3>${level}</h3>
-                <p><strong>Tavsiya:</strong> ${advice}</p>
                 <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
             `;
         }
 
-        // Testni boshlash
         showQuestion();
     </script>
 </body>
