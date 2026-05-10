@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Psixologik Testlar</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+        .panel { max-width: 900px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: #f0f0f0; }
+        button { padding: 12px 20px; margin: 8px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .export-btn { background: #27ae60; color: white; }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <h2>🔧 Admin Panel</h2>
+        <p><strong>Umumiy hisobot</strong></p>
+        
+        <button class="export-btn" onclick="exportToExcel()">📊 Excel yuklab olish</button>
+        <button onclick="logout()" style="background:#e74c3c;">Chiqish</button>
+
+        <table id="resultsTable">
+            <tr>
+                <th>Sana</th>
+                <th>Ism</th>
+                <th>Test turi</th>
+                <th>Natija</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "12345"; // O'zgartiring!
+
+        // Misol ma'lumotlar (keyinroq real backend bilan almashtiramiz)
+        let results = [
+            {date: "10.05.2026 12:34", name: "Azizbek", test: "PSS-14", result: "34 - O'rtacha stress"},
+            {date: "10.05.2026 13:15", name: "Nilufar", test: "MBI-22", result: "Yuqori charchoq"},
+            {date: "10.05.2026 14:20", name: "Shaxzod", test: "PWB-42", result: "178 - O'rtacha farovonlik"}
+        ];
+
+        function loadTable() {
+            const table = document.getElementById("resultsTable");
+            results.forEach(r => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${r.date}</td>
+                        <td>${r.name}</td>
+                        <td>${r.test}</td>
+                        <td>${r.result}</td>
+                    </tr>`;
+            });
+        }
+
+        function exportToExcel() {
+            let csv = "Sana,Ism,Test turi,Natija\n";
+            results.forEach(r => {
+                csv += `${r.date},${r.name},${r.test},${r.result}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `psix_test_hisoboti_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+
+            alert("✅ Hisobot CSV fayl sifatida yuklandi!\n\nKeyinchalik Excel formatida ham qilamiz.");
+        }
+
+        function logout() {
+            if (confirm("Chiqishni xohlaysizmi?")) {
+                window.location.href = "index.html";
+            }
+        }
+
+        // Sahifa yuklanganda
+        window.onload = loadTable;
+    </script>
+</body>
+</html>
