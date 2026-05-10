@@ -164,4 +164,27 @@
                 recommendation = "Yuqori kasbiy charchoq holati aniqlandi. Ish yukini kamaytirish, dam olish va mutaxassis yordamini olish juda muhim.";
                 color = "#e74c3c";
             } else if (hc >= 17 || dp >= 7) {
-                recommendation = "O'rtacha charchoq darajasi. Profilaktika choralari ko'ring: har kuni o'zingizga vaqt ajrating, sport bilan shug
+                recommendation = "O'rtacha charchoq darajasi. Profilaktika choralari ko'ring: har kuni o'zingizga vaqt ajrating, sport bilan shug'ullaning va ish bilan shaxsiy hayot muvozanatini saqlang.";
+                color = "#f39c12";
+            } else {
+                recommendation = "Kasbiy charchoq darajasi past. Hozirgi muvozanatni saqlang va o'zingizni tabriklang — zo'r ishlayapsiz!";
+                color = "#2ecc71";
+            }
+
+            document.getElementById("question-container").innerHTML = `
+                <h2>Test tugadi!</h2>
+                <h3>Hissiy charchoq: <b>${hc}/54</b></h3>
+                <h3>Depersonalizatsiya: <b>${dp}/30</b></h3>
+                <h3>Shaxsiy yutuq: <b>${sy}/48</b></h3>
+                <div class="result" style="color:${color}; font-size:1.5rem; font-weight:bold;">Umumiy holat: ${totalScore > 50 ? 'Yuqori charchoq' : totalScore > 30 ? 'O\'rtacha' : 'Past charchoq'}</div>
+                <div class="recommendation" style="background:rgba(255,255,255,0.25);">
+                    <strong>Tavsiya:</strong><br>${recommendation}
+                </div>
+                <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
+            `;
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
