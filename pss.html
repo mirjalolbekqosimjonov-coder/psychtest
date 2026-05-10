@@ -106,63 +106,66 @@
                 html += `<button ${selected} onclick="selectAnswer(${i})">${answers[i]}</button>`;
             }
             document.getElementById("options").innerHTML = html;
+
             document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
         }
 
         function selectAnswer(value) {
             scores[current] = value;
+            
+            // Javob tanlanganda avtomatik keyingi savolga o'tish
             if (current < 13) {
-                setTimeout(() => { current++; showQuestion(); }, 350);
+                setTimeout(() => {
+                    current++;
+                    showQuestion();
+                }, 350);
             } else {
+                // Oxirgi savol bo'lsa — avtomatik yakunlash
                 setTimeout(finishTest, 400);
             }
         }
 
         function prevQuestion() {
-            if (current > 0) { current--; showQuestion(); }
+            if (current > 0) {
+                current--;
+                showQuestion();
+            }
         }
 
         function finishTest() {
             const unanswered = scores.filter(s => s === null).length;
+            
             if (unanswered > 0) {
-                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) return;
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
+                    return;
+                }
             }
 
-            // To'g'ri ball hisoblash
-            const reverseIndices = [3,4,6,7,8,9,12,13];
-            let total = 0;
-            for (let i = 0; i < 14; i++) {
-                let score = scores[i] !== null ? scores[i] : 0;
-                if (reverseIndices.includes(i)) score = 4 - score;
-                total += score;
-            }
+            let total = scores.reduce((a, b) => a + (b || 0), 0);
+            let level = "";
+            let advice = "";
 
-            let level = total <= 13 ? "🟢 Juda past" : total <= 26 ? "🟡 Past" : total <= 39 ? "🟠 O'rtacha" : "🔴 Yuqori";
-
-            // ================== ENG MUHIM QISM ==================
-            const resultData = {
-                test: "PSS-14",
-                ball: total,
-                natija: level
-            };
-
-            // Telegram WebApp orqali botga yuborish
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.sendData(JSON.stringify(resultData));
-                console.log("Natija botga yuborildi:", resultData);
+            if (total <= 18) {
+                level = "🟢 Past stress darajasi";
+                advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
+            } else if (total <= 37) {
+                level = "🟡 O'rtacha stress darajasi";
+                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
             } else {
-                console.log("Telegram WebApp aniqlanmadi");
+                level = "🔴 Yuqori stress darajasi";
+                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
             }
 
-            // Natijani ekranda ko'rsatish
             document.getElementById("question-container").innerHTML = `
                 <h2>Test tugadi!</h2>
                 <h3>Jami ball: <b>${total} / 56</b></h3>
-                <h3>${level} stress darajasi</h3>
+                <h3>${level}</h3>
+                <p><strong>Tavsiya:</strong> ${advice}</p>
                 <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
             `;
         }
 
+        // Testni boshlash
         showQuestion();
     </script>
 </body>
