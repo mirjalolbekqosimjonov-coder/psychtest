@@ -34,6 +34,7 @@
             border-radius: 10px;
             font-size: 1rem;
             cursor: pointer;
+            transition: 0.3s;
         }
         .options button:hover, .options button.selected { 
             background: #3498db; 
@@ -69,7 +70,6 @@
 
         <div class="nav-buttons">
             <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
-            <button onclick="nextQuestion()" id="nextBtn">Keyingi →</button>
             <button onclick="finishTest()" class="finish-btn">Testni yakunlash</button>
         </div>
     </div>
@@ -93,7 +93,7 @@
         ];
 
         let current = 0;
-        let scores = new Array(14).fill(null); // null = javob berilmagan
+        let scores = new Array(14).fill(null);
 
         function showQuestion() {
             document.getElementById("progress").textContent = `Savol ${current + 1} / 14`;
@@ -112,7 +112,14 @@
 
         function selectAnswer(value) {
             scores[current] = value;
-            showQuestion(); // tanlangan javobni belgilab turadi
+            
+            // Javob tanlangandan keyin avtomatik keyingi savolga o'tish
+            if (current < 13) {
+                setTimeout(() => {
+                    current++;
+                    showQuestion();
+                }, 400); // 0.4 soniya kechikish (foydalanuvchi javobni ko‘rib ulgurishi uchun)
+            }
         }
 
         function prevQuestion() {
@@ -122,19 +129,11 @@
             }
         }
 
-        function nextQuestion() {
-            if (current < 13) {
-                current++;
-                showQuestion();
-            }
-        }
-
         function finishTest() {
-            // Javob berilmagan savollarni tekshirish
             const unanswered = scores.filter(s => s === null).length;
             
             if (unanswered > 0) {
-                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz. Shunga qaramay yakunlamoqchimisiz?`)) {
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay testni yakunlamoqchimisiz?`)) {
                     return;
                 }
             }
