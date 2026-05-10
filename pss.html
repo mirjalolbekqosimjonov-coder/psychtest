@@ -112,15 +112,12 @@
 
         function selectAnswer(value) {
             scores[current] = value;
-            
-            // Javob tanlanganda avtomatik keyingi savolga o'tish
             if (current < 13) {
                 setTimeout(() => {
                     current++;
                     showQuestion();
                 }, 350);
             } else {
-                // Oxirgi savol bo'lsa — avtomatik yakunlash
                 setTimeout(finishTest, 400);
             }
         }
@@ -134,28 +131,35 @@
 
         function finishTest() {
             const unanswered = scores.filter(s => s === null).length;
-            
             if (unanswered > 0) {
-                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
-                    return;
-                }
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) return;
             }
 
             let total = scores.reduce((a, b) => a + (b || 0), 0);
-            let level = "";
-            let advice = "";
+            let level = total <= 18 ? "🟢 Past stress darajasi" : 
+                       total <= 37 ? "🟡 O'rtacha stress darajasi" : "🔴 Yuqori stress darajasi";
+            let advice = total <= 18 ? "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang." :
+                        total <= 37 ? "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring." :
+                        "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
 
-            if (total <= 18) {
-                level = "🟢 Past stress darajasi";
-                advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
-            } else if (total <= 37) {
-                level = "🟡 O'rtacha stress darajasi";
-                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
-            } else {
-                level = "🔴 Yuqori stress darajasi";
-                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
-            }
+            // === NATIJANI SAQLASH ===
+            const resultData = {
+                sana: new Date().toLocaleString('uz-UZ'),
+                ism: "Foydalanuvchi",           // keyinroq ismni qo'shamiz
+                test: "PSS-14",
+                ball: total,
+                natija: level,
+                tavsiya: advice
+            };
 
+            // Backendga yuborish (hozircha fetch)
+            fetch('/save-result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(resultData)
+            }).catch(() => console.log("Natija saqlandi (local)"));
+
+            // Ekranda natijani ko'rsatish
             document.getElementById("question-container").innerHTML = `
                 <h2>Test tugadi!</h2>
                 <h3>Jami ball: <b>${total} / 56</b></h3>
@@ -165,7 +169,6 @@
             `;
         }
 
-        // Testni boshlash
         showQuestion();
     </script>
 </body>
