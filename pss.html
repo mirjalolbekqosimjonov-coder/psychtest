@@ -34,18 +34,20 @@
             border-radius: 10px;
             font-size: 1rem;
             cursor: pointer;
-            transition: 0.3s;
         }
         .options button:hover { background: #3498db; color: white; }
         .nav-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         .nav-buttons button {
             flex: 1;
             padding: 14px;
             font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
         }
         .finish-btn { background: #27ae60; color: white; font-weight: bold; }
     </style>
@@ -63,8 +65,8 @@
         </div>
 
         <div class="nav-buttons">
-            <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
-            <button onclick="nextQuestion()" id="nextBtn">Keyingi →</button>
+            <button onclick="prevQuestion()" id="prevBtn">← Oldingi savol</button>
+            <button onclick="nextQuestion()" id="nextBtn">Keyingi savol →</button>
         </div>
     </div>
 
@@ -100,11 +102,14 @@
             }
             document.getElementById("options").innerHTML = html;
 
+            // Tugmalarni boshqarish
             document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
+            document.getElementById("nextBtn").style.display = current === 13 ? "none" : "inline-block";
         }
 
         function selectAnswer(value) {
             scores[current] = value;
+            
             if (current < 13) {
                 current++;
                 showQuestion();
@@ -120,6 +125,13 @@
             }
         }
 
+        function nextQuestion() {
+            if (current < 13) {
+                current++;
+                showQuestion();
+            }
+        }
+
         function finishTest() {
             let total = scores.reduce((a, b) => a + b, 0);
             let level = "";
@@ -130,10 +142,10 @@
                 advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
             } else if (total <= 37) {
                 level = "🟡 O'rtacha stress darajasi";
-                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
+                advice = "Stress darajangiz o'rtacha. Nafas mashqlari, sport va dam olishni ko'paytiring.";
             } else {
                 level = "🔴 Yuqori stress darajasi";
-                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
+                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni va dam olishni kuchaytirishni tavsiya qilamiz.";
             }
 
             document.getElementById("question-container").innerHTML = `
