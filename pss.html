@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PSS-14 — Stress Testi</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0; padding: 0;
@@ -14,8 +14,10 @@
             min-height: 100vh;
         }
         .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 20px 0; }
+        .progress { text-align: center; font-size: 1.1rem; margin: 10px 0; font-weight: 600; }
         .question {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
             padding: 25px;
             border-radius: 15px;
             margin: 20px 0;
@@ -24,30 +26,45 @@
         .options button {
             display: block;
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             margin: 8px 0;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             color: #333;
             border: none;
             border-radius: 10px;
             font-size: 1rem;
             cursor: pointer;
+            transition: 0.3s;
         }
-        .progress {
-            text-align: center;
-            margin: 15px 0;
-            font-weight: 600;
+        .options button:hover { background: #3498db; color: white; }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
+        .nav-buttons button {
+            flex: 1;
+            padding: 14px;
+            font-size: 1rem;
+        }
+        .finish-btn { background: #27ae60; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>PSS-14 — Stress darajasi</h1>
-        <div class="progress" id="progress">Savol 1 / 14</div>
-        
+        <div class="header">
+            <h1>PSS-14 — Stress darajasi</h1>
+            <div class="progress" id="progress">Savol 1 / 14</div>
+        </div>
+
         <div class="question" id="question-container">
-            <p id="question-text"></p>
+            <p id="question-text" style="font-size:1.1rem; line-height:1.5;"></p>
             <div class="options" id="options"></div>
+        </div>
+
+        <div class="nav-buttons">
+            <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
+            <button onclick="nextQuestion()" id="nextBtn">Keyingi →</button>
         </div>
     </div>
 
@@ -69,47 +86,62 @@
             "O'tgan oyda hayotingiz ustida to'liq nazoratda ekaningizni his qildingizmi?"
         ];
 
-        let currentQuestion = 0;
-        let scores = [];
+        let current = 0;
+        let scores = new Array(14).fill(0);
 
         function showQuestion() {
-            document.getElementById("progress").textContent = `Savol ${currentQuestion + 1} / 14`;
-            document.getElementById("question-text").textContent = questions[currentQuestion];
-            
-            const optionsDiv = document.getElementById("options");
-            optionsDiv.innerHTML = `
-                <button onclick="answer(0)">Hech qachon</button>
-                <button onclick="answer(1)">Kamdan-kam</button>
-                <button onclick="answer(2)">Ba'zan</button>
-                <button onclick="answer(3)">Ko'pincha</button>
-                <button onclick="answer(4)">Doim</button>
-            `;
+            document.getElementById("progress").textContent = `Savol ${current + 1} / 14`;
+            document.getElementById("question-text").textContent = questions[current];
+
+            let html = "";
+            const answers = ["Hech qachon", "Kamdan-kam", "Ba'zan", "Ko'pincha", "Doim"];
+            for (let i = 0; i < 5; i++) {
+                html += `<button onclick="selectAnswer(${i})">${answers[i]}</button>`;
+            }
+            document.getElementById("options").innerHTML = html;
+
+            document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
         }
 
-        function answer(score) {
-            scores.push(score);
-            currentQuestion++;
-            
-            if (currentQuestion < questions.length) {
+        function selectAnswer(value) {
+            scores[current] = value;
+            if (current < 13) {
+                current++;
                 showQuestion();
             } else {
                 finishTest();
             }
         }
 
+        function prevQuestion() {
+            if (current > 0) {
+                current--;
+                showQuestion();
+            }
+        }
+
         function finishTest() {
             let total = scores.reduce((a, b) => a + b, 0);
-            let result = "";
-            
-            if (total <= 18) result = "🟢 Past stress darajasi";
-            else if (total <= 37) result = "🟡 O'rtacha stress darajasi";
-            else result = "🔴 Yuqori stress darajasi";
+            let level = "";
+            let advice = "";
+
+            if (total <= 18) {
+                level = "🟢 Past stress darajasi";
+                advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
+            } else if (total <= 37) {
+                level = "🟡 O'rtacha stress darajasi";
+                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
+            } else {
+                level = "🔴 Yuqori stress darajasi";
+                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
+            }
 
             document.getElementById("question-container").innerHTML = `
                 <h2>Test tugadi!</h2>
-                <h3>Jami ball: ${total} / 56</h3>
-                <p><strong>${result}</strong></p>
-                <button onclick="window.location.href='index.html'" style="background:#2ecc71;color:white;">Bosh sahifaga qaytish</button>
+                <h3>Jami ball: <b>${total} / 56</b></h3>
+                <h3>${level}</h3>
+                <p><strong>Tavsiya:</strong> ${advice}</p>
+                <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
             `;
         }
 
