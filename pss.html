@@ -34,23 +34,18 @@
             border-radius: 10px;
             font-size: 1rem;
             cursor: pointer;
+            transition: 0.3s;
         }
-        .options button:hover, .options button.selected { 
-            background: #3498db; 
-            color: white; 
-        }
+        .options button:hover { background: #3498db; color: white; }
         .nav-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 25px;
+            margin-top: 20px;
         }
         .nav-buttons button {
             flex: 1;
             padding: 14px;
             font-size: 1rem;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
         }
         .finish-btn { background: #27ae60; color: white; font-weight: bold; }
     </style>
@@ -69,12 +64,12 @@
 
         <div class="nav-buttons">
             <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
-            <button onclick="finishTest()" class="finish-btn">Testni yakunlash</button>
+            <button onclick="nextQuestion()" id="nextBtn">Keyingi →</button>
         </div>
     </div>
 
     <script>
-        const questions = [ /* 14 ta savol bir xil */ 
+        const questions = [
             "O'tgan oyda kutilmagan voqea sizni qanchalik xafa qildi?",
             "O'tgan oyda muhim narsalarni boshqara olmayotganingizni his qildingizmi?",
             "O'tgan oyda asabiy va stressli his qildingizmi?",
@@ -92,7 +87,7 @@
         ];
 
         let current = 0;
-        let scores = new Array(14).fill(null);
+        let scores = new Array(14).fill(0);
 
         function showQuestion() {
             document.getElementById("progress").textContent = `Savol ${current + 1} / 14`;
@@ -101,8 +96,7 @@
             let html = "";
             const answers = ["Hech qachon", "Kamdan-kam", "Ba'zan", "Ko'pincha", "Doim"];
             for (let i = 0; i < 5; i++) {
-                const selected = scores[current] === i ? "class='selected'" : "";
-                html += `<button ${selected} onclick="selectAnswer(${i})">${answers[i]}</button>`;
+                html += `<button onclick="selectAnswer(${i})">${answers[i]}</button>`;
             }
             document.getElementById("options").innerHTML = html;
 
@@ -112,12 +106,10 @@
         function selectAnswer(value) {
             scores[current] = value;
             if (current < 13) {
-                setTimeout(() => {
-                    current++;
-                    showQuestion();
-                }, 350);
+                current++;
+                showQuestion();
             } else {
-                setTimeout(finishTest, 400);
+                finishTest();
             }
         }
 
@@ -129,35 +121,31 @@
         }
 
         function finishTest() {
-            const unanswered = scores.filter(s => s === null).length;
-            if (unanswered > 0) {
-                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nYakunlamoqchimisiz?`)) return;
+            let total = scores.reduce((a, b) => a + b, 0);
+            let level = "";
+            let advice = "";
+
+            if (total <= 18) {
+                level = "🟢 Past stress darajasi";
+                advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
+            } else if (total <= 37) {
+                level = "🟡 O'rtacha stress darajasi";
+                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
+            } else {
+                level = "🔴 Yuqori stress darajasi";
+                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
             }
-
-            let total = scores.reduce((a, b) => a + (b || 0), 0);
-            let level = total <= 18 ? "🟢 Past stress" : total <= 37 ? "🟡 O'rtacha stress" : "🔴 Yuqori stress";
-
-            // Natijani saqlash (Telegram Web App orqali)
-            const resultData = {
-                sana: new Date().toLocaleString('uz-UZ'),
-                ism: "Foydalanuvchi", // keyinroq ismni olish mumkin
-                test: "PSS-14",
-                natija: `${total} - ${level}`,
-                ball: total
-            };
-
-            // Backendga yuborish (hozircha alert)
-            console.log("Natija saqlandi:", resultData);
-            alert(`Test tugadi!\nJami ball: ${total}/56\nDaraja: ${level}\n\nNatija saqlandi.`);
 
             document.getElementById("question-container").innerHTML = `
                 <h2>Test tugadi!</h2>
                 <h3>Jami ball: <b>${total} / 56</b></h3>
                 <h3>${level}</h3>
+                <p><strong>Tavsiya:</strong> ${advice}</p>
                 <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
             `;
         }
 
+        // Testni boshlash
         showQuestion();
     </script>
 </body>
