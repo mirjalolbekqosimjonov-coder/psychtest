@@ -6,18 +6,53 @@
     <title>PSS-14 — Stress Testi</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #3498db, #2c3e50); color: white; min-height: 100vh; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0; padding: 0;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            min-height: 100vh;
+        }
         .container { max-width: 700px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; padding: 20px 0; }
         .progress { text-align: center; font-size: 1.1rem; margin: 10px 0; font-weight: 600; }
-        .question { background: rgba(255,255,255,0.15); padding: 25px; border-radius: 15px; margin: 20px 0; }
-        .options button {
-            display: block; width: 100%; padding: 15px; margin: 8px 0; background: rgba(255,255,255,0.95);
-            color: #333; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer;
+        .question {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
         }
-        .options button:hover, .options button.selected { background: #3498db; color: white; }
-        .nav-buttons { display: flex; gap: 10px; margin-top: 25px; }
-        .nav-buttons button { flex: 1; padding: 14px; font-size: 1rem; border-radius: 10px; border: none; cursor: pointer; }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .options button:hover, .options button.selected { 
+            background: #3498db; 
+            color: white; 
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .nav-buttons button {
+            flex: 1;
+            padding: 14px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
         .finish-btn { background: #27ae60; color: white; font-weight: bold; }
     </style>
 </head>
@@ -40,14 +75,21 @@
     </div>
 
     <script>
-        const questions = [ /* 14 ta savol bir xil qoldi */ 
-            "O'tgan oyda kutilmagan voqea sizni qanchalik xafa qildi?", "O'tgan oyda muhim narsalarni boshqara olmayotganingizni his qildingizmi?",
-            "O'tgan oyda asabiy va stressli his qildingizmi?", "O'tgan oyda shaxsiy muammolaringizni hal qilishga qanchalik ishondingiz?",
-            "O'tgan oyda hamma narsa istagan yo'lingizda ketyapti deb his qildingizmi?", "O'tgan oyda barcha ishlarni uddalay olmayotganingizni his qildingizmi?",
-            "O'tgan oyda g'azablantiruvchi vaziyatlarni qanchalik boshqara oldingiz?", "O'tgan oyda vaziyat ustida ekaningizni his qildingizmi?",
-            "O'tgan oyda nazoratdan tashqari narsalar sizni g'azablantirdimi?", "O'tgan oyda qiyinchiliklarni yengib o'ta olmayman deb his qildingizmi?",
-            "O'tgan oyda bajarish kerak bo'lgan ishlar haqida tez-tez o'ylab qoldingizmi?", "O'tgan oyda vaqtingizni boshqarishda qanchalik muvaffaqiyatli bo'ldingiz?",
-            "O'tgan oyda muhim o'zgarishlarni samarali boshqarayotganingizni his qildingizmi?", "O'tgan oyda hayotingiz ustida to'liq nazoratda ekaningizni his qildingizmi?"
+        const questions = [
+            "O'tgan oyda kutilmagan voqea sizni qanchalik xafa qildi?",
+            "O'tgan oyda muhim narsalarni boshqara olmayotganingizni his qildingizmi?",
+            "O'tgan oyda asabiy va stressli his qildingizmi?",
+            "O'tgan oyda shaxsiy muammolaringizni hal qilishga qanchalik ishondingiz?",
+            "O'tgan oyda hamma narsa istagan yo'lingizda ketyapti deb his qildingizmi?",
+            "O'tgan oyda barcha ishlarni uddalay olmayotganingizni his qildingizmi?",
+            "O'tgan oyda g'azablantiruvchi vaziyatlarni qanchalik boshqara oldingiz?",
+            "O'tgan oyda vaziyat ustida ekaningizni his qildingizmi?",
+            "O'tgan oyda nazoratdan tashqari narsalar sizni g'azablantirdimi?",
+            "O'tgan oyda qiyinchiliklarni yengib o'ta olmayman deb his qildingizmi?",
+            "O'tgan oyda bajarish kerak bo'lgan ishlar haqida tez-tez o'ylab qoldingizmi?",
+            "O'tgan oyda vaqtingizni boshqarishda qanchalik muvaffaqiyatli bo'ldingiz?",
+            "O'tgan oyda muhim o'zgarishlarni samarali boshqarayotganingizni his qildingizmi?",
+            "O'tgan oyda hayotingiz ustida to'liq nazoratda ekaningizni his qildingizmi?"
         ];
 
         let current = 0;
@@ -64,38 +106,54 @@
                 html += `<button ${selected} onclick="selectAnswer(${i})">${answers[i]}</button>`;
             }
             document.getElementById("options").innerHTML = html;
+
             document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
         }
 
         function selectAnswer(value) {
             scores[current] = value;
+            
+            // Javob tanlanganda avtomatik keyingi savolga o'tish
             if (current < 13) {
-                setTimeout(() => { current++; showQuestion(); }, 350);
+                setTimeout(() => {
+                    current++;
+                    showQuestion();
+                }, 350);
             } else {
+                // Oxirgi savol bo'lsa — avtomatik yakunlash
                 setTimeout(finishTest, 400);
             }
         }
 
         function prevQuestion() {
-            if (current > 0) { current--; showQuestion(); }
+            if (current > 0) {
+                current--;
+                showQuestion();
+            }
         }
 
         function finishTest() {
+            const unanswered = scores.filter(s => s === null).length;
+            
+            if (unanswered > 0) {
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
+                    return;
+                }
+            }
+
             let total = scores.reduce((a, b) => a + (b || 0), 0);
-            let level = total <= 18 ? "🟢 Past stress" : total <= 37 ? "🟡 O'rtacha stress" : "🔴 Yuqori stress";
-            let advice = total <= 18 ? "Siz nisbatan xotirjam holatdasiz." : total <= 37 ? "Stress darajangiz o'rtacha." : "Stress darajangiz yuqori. Psixolog bilan gaplashing.";
+            let level = "";
+            let advice = "";
 
-            // Telegram botga natijani yuborish
-            const resultText = `PSS-14 Natijasi\nJami ball: ${total}/56\nDaraja: ${level}\nTavsiya: ${advice}`;
-
-            // Telegram Web App orqali botga yuborish
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.sendData(JSON.stringify({
-                    test: "PSS-14",
-                    ball: total,
-                    natija: level,
-                    tavsiya: advice
-                }));
+            if (total <= 18) {
+                level = "🟢 Past stress darajasi";
+                advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
+            } else if (total <= 37) {
+                level = "🟡 O'rtacha stress darajasi";
+                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
+            } else {
+                level = "🔴 Yuqori stress darajasi";
+                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
             }
 
             document.getElementById("question-container").innerHTML = `
@@ -107,6 +165,7 @@
             `;
         }
 
+        // Testni boshlash
         showQuestion();
     </script>
 </body>
