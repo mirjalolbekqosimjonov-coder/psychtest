@@ -35,7 +35,10 @@
             font-size: 1rem;
             cursor: pointer;
         }
-        .options button:hover { background: #3498db; color: white; }
+        .options button:hover, .options button.selected { 
+            background: #3498db; 
+            color: white; 
+        }
         .nav-buttons {
             display: flex;
             gap: 10px;
@@ -67,6 +70,7 @@
         <div class="nav-buttons">
             <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
             <button onclick="nextQuestion()" id="nextBtn">Keyingi →</button>
+            <button onclick="finishTest()" class="finish-btn">Testni yakunlash</button>
         </div>
     </div>
 
@@ -98,13 +102,12 @@
             let html = "";
             const answers = ["Hech qachon", "Kamdan-kam", "Ba'zan", "Ko'pincha", "Doim"];
             for (let i = 0; i < 5; i++) {
-                const selected = scores[current] === i ? "style='background:#3498db;color:white;'" : "";
+                const selected = scores[current] === i ? "class='selected'" : "";
                 html += `<button ${selected} onclick="selectAnswer(${i})">${answers[i]}</button>`;
             }
             document.getElementById("options").innerHTML = html;
 
             document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
-            document.getElementById("nextBtn").style.display = current === 13 ? "none" : "inline-block";
         }
 
         function selectAnswer(value) {
@@ -120,10 +123,6 @@
         }
 
         function nextQuestion() {
-            if (scores[current] === null) {
-                alert("Iltimos, savolga javob bering!");
-                return;
-            }
             if (current < 13) {
                 current++;
                 showQuestion();
@@ -131,13 +130,16 @@
         }
 
         function finishTest() {
-            // Javob berilmagan savollar bor-yo‘qligini tekshirish
-            if (scores.includes(null)) {
-                alert("Iltimos, barcha savollarga javob bering!");
-                return;
+            // Javob berilmagan savollarni tekshirish
+            const unanswered = scores.filter(s => s === null).length;
+            
+            if (unanswered > 0) {
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz. Shunga qaramay yakunlamoqchimisiz?`)) {
+                    return;
+                }
             }
 
-            let total = scores.reduce((a, b) => a + b, 0);
+            let total = scores.reduce((a, b) => a + (b || 0), 0);
             let level = "";
             let advice = "";
 
