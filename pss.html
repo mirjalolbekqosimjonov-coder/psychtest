@@ -65,8 +65,8 @@
         </div>
 
         <div class="nav-buttons">
-            <button onclick="prevQuestion()" id="prevBtn">← Oldingi savol</button>
-            <button onclick="nextQuestion()" id="nextBtn">Keyingi savol →</button>
+            <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
+            <button onclick="nextQuestion()" id="nextBtn">Keyingi →</button>
         </div>
     </div>
 
@@ -89,7 +89,7 @@
         ];
 
         let current = 0;
-        let scores = new Array(14).fill(0);
+        let scores = new Array(14).fill(null); // null = javob berilmagan
 
         function showQuestion() {
             document.getElementById("progress").textContent = `Savol ${current + 1} / 14`;
@@ -98,24 +98,18 @@
             let html = "";
             const answers = ["Hech qachon", "Kamdan-kam", "Ba'zan", "Ko'pincha", "Doim"];
             for (let i = 0; i < 5; i++) {
-                html += `<button onclick="selectAnswer(${i})">${answers[i]}</button>`;
+                const selected = scores[current] === i ? "style='background:#3498db;color:white;'" : "";
+                html += `<button ${selected} onclick="selectAnswer(${i})">${answers[i]}</button>`;
             }
             document.getElementById("options").innerHTML = html;
 
-            // Tugmalarni boshqarish
             document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
             document.getElementById("nextBtn").style.display = current === 13 ? "none" : "inline-block";
         }
 
         function selectAnswer(value) {
             scores[current] = value;
-            
-            if (current < 13) {
-                current++;
-                showQuestion();
-            } else {
-                finishTest();
-            }
+            showQuestion(); // tanlangan javobni belgilab turadi
         }
 
         function prevQuestion() {
@@ -126,6 +120,10 @@
         }
 
         function nextQuestion() {
+            if (scores[current] === null) {
+                alert("Iltimos, savolga javob bering!");
+                return;
+            }
             if (current < 13) {
                 current++;
                 showQuestion();
@@ -133,6 +131,12 @@
         }
 
         function finishTest() {
+            // Javob berilmagan savollar bor-yo‘qligini tekshirish
+            if (scores.includes(null)) {
+                alert("Iltimos, barcha savollarga javob bering!");
+                return;
+            }
+
             let total = scores.reduce((a, b) => a + b, 0);
             let level = "";
             let advice = "";
@@ -142,10 +146,10 @@
                 advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
             } else if (total <= 37) {
                 level = "🟡 O'rtacha stress darajasi";
-                advice = "Stress darajangiz o'rtacha. Nafas mashqlari, sport va dam olishni ko'paytiring.";
+                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
             } else {
                 level = "🔴 Yuqori stress darajasi";
-                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni va dam olishni kuchaytirishni tavsiya qilamiz.";
+                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
             }
 
             document.getElementById("question-container").innerHTML = `
