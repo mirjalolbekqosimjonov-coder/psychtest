@@ -142,7 +142,7 @@
             document.getElementById("question-text").textContent = questions[current];
 
             let html = "";
-            const answers = ["To'liq qo'shmayman", "Qo'shmayman", "Biroz qo'shmayman", "Biroz qo'shilaman", "Qo'shilaman", "To'liq qo'shilaman"];
+            const answers = ["To'liq qo'shilmayman", "Qo'shilmayman", "Biroz qo'shilmayman", "Biroz qo'shilaman", "Qo'shilaman", "To'liq qo'shilaman"];
             for (let i = 0; i < 6; i++) {
                 const selected = scores[current] === i+1 ? "class='selected'" : "";
                 html += `<button ${selected} onclick="selectAnswer(${i+1})">${answers[i]}</button>`;
