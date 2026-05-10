@@ -113,12 +113,15 @@
         function selectAnswer(value) {
             scores[current] = value;
             
-            // Javob tanlangandan keyin avtomatik keyingi savolga o'tish
+            // Javob tanlanganda avtomatik keyingi savolga o'tish
             if (current < 13) {
                 setTimeout(() => {
                     current++;
                     showQuestion();
-                }, 400); // 0.4 soniya kechikish (foydalanuvchi javobni ko‘rib ulgurishi uchun)
+                }, 350);
+            } else {
+                // Oxirgi savol bo'lsa — avtomatik yakunlash
+                setTimeout(finishTest, 400);
             }
         }
 
@@ -133,7 +136,7 @@
             const unanswered = scores.filter(s => s === null).length;
             
             if (unanswered > 0) {
-                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay testni yakunlamoqchimisiz?`)) {
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
                     return;
                 }
             }
