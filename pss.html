@@ -36,9 +36,9 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .options button:hover, .options button.selected { 
-            background: #3498db; 
-            color: white; 
+        .options button:hover, .options button.selected {
+            background: #3498db;
+            color: white;
         }
         .nav-buttons {
             display: flex;
@@ -59,7 +59,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>PSS-14 — Stress darajasi</h1>
+            <h1>PSS-14 — Stress darajasi testi</h1>
             <div class="progress" id="progress">Savol 1 / 14</div>
         </div>
 
@@ -106,21 +106,17 @@
                 html += `<button ${selected} onclick="selectAnswer(${i})">${answers[i]}</button>`;
             }
             document.getElementById("options").innerHTML = html;
-
             document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
         }
 
         function selectAnswer(value) {
             scores[current] = value;
-            
-            // Javob tanlanganda avtomatik keyingi savolga o'tish
             if (current < 13) {
                 setTimeout(() => {
                     current++;
                     showQuestion();
                 }, 350);
             } else {
-                // Oxirgi savol bo'lsa — avtomatik yakunlash
                 setTimeout(finishTest, 400);
             }
         }
@@ -134,26 +130,39 @@
 
         function finishTest() {
             const unanswered = scores.filter(s => s === null).length;
-            
             if (unanswered > 0) {
                 if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
                     return;
                 }
             }
 
-            let total = scores.reduce((a, b) => a + (b || 0), 0);
+            // === TO'G'RI BALL HISOBLASH ===
+            const reverseIndices = [3, 4, 6, 7, 8, 9, 12, 13]; // teskari savollar (0-based)
+            let total = 0;
+
+            for (let i = 0; i < 14; i++) {
+                let score = scores[i] !== null ? scores[i] : 0;
+                if (reverseIndices.includes(i)) {
+                    score = 4 - score;   // teskari hisoblash
+                }
+                total += score;
+            }
+
             let level = "";
             let advice = "";
 
-            if (total <= 18) {
-                level = "🟢 Past stress darajasi";
-                advice = "Siz nisbatan xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
-            } else if (total <= 37) {
-                level = "🟡 O'rtacha stress darajasi";
-                advice = "Stress darajangiz o'rtacha. Nafas mashqlari va dam olishni ko'paytiring.";
+            if (total <= 13) {
+                level = "🟢 Juda past stress";
+                advice = "Siz juda xotirjam holatdasiz. Hozirgi tarzingizni saqlang.";
+            } else if (total <= 26) {
+                level = "🟡 Past stress darajasi";
+                advice = "Stress darajangiz past. Yaxshi holatdasiz.";
+            } else if (total <= 39) {
+                level = "🟠 O'rtacha stress darajasi";
+                advice = "Stress darajangiz o'rtacha. Dam olish va sport bilan shug'ullanishni tavsiya qilamiz.";
             } else {
                 level = "🔴 Yuqori stress darajasi";
-                advice = "Stress darajangiz yuqori. Psixolog bilan maslahatlashishni tavsiya qilamiz.";
+                advice = "Stress darajangiz yuqori. Psixolog yoki mutaxassis bilan maslahatlashishni qattiq tavsiya qilamiz.";
             }
 
             document.getElementById("question-container").innerHTML = `
@@ -165,7 +174,6 @@
             `;
         }
 
-        // Testni boshlash
         showQuestion();
     </script>
 </body>
