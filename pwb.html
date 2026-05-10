@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWB-42 — Psixologik farovonlik testi</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0; padding: 0;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 20px 0; }
+        .progress { text-align: center; font-size: 1.1rem; margin: 10px 0; font-weight: 600; }
+        .question {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .options button:hover, .options button.selected { 
+            background: #2ecc71; 
+            color: white; 
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .nav-buttons button {
+            flex: 1;
+            padding: 14px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .finish-btn { background: #27ae60; color: white; font-weight: bold; }
+        .result { font-size: 1.5rem; margin: 15px 0; font-weight: bold; }
+        .recommendation { 
+            font-size: 1.25rem; 
+            background: rgba(255,255,255,0.25); 
+            padding: 20px; 
+            border-radius: 15px; 
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 PWB-42 — Psixologik farovonlik testi</h1>
+            <div class="progress" id="progress">Savol 1 / 42</div>
+        </div>
+
+        <div class="question" id="question-container">
+            <p id="question-text" style="font-size:1.1rem; line-height:1.5;"></p>
+            <div class="options" id="options"></div>
+        </div>
+
+        <div class="nav-buttons">
+            <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
+            <button onclick="finishTest()" class="finish-btn">Testni yakunlash</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // 1-7 O'z-o'zini qabul qilish
+            "Men o'zimning ko'p jihatlarimni yaxshi ko'raman.",
+            "Men o'zim haqimda ko'pincha salbiy fikrlar aytaman.",
+            "Men o'tgan hayotimdan umuman pushaymon emasman.",
+            "Men o'zimni boshqa odamlar bilan solishtirganda yaxshi his qilaman.",
+            "Men o'z hayotimdan ko'pincha norozi bo'laman.",
+            "Men o'zimni qabul qilishda qiyinchilik sezaman.",
+            "Men o'zimni ijobiy jihatlarini baholay olaman.",
+            // 8-14 Ijobiy munosabatlar
+            "Odamlar meni ishonchli va samimiy inson deb bilishadi.",
+            "Men boshqa odamlar bilan yaqin munosabatlar o'rnatishda qiyinchilik sezaman.",
+            "Men do'stlarim va yaqinlarim bilan iliq munosabatda bo'lishga intilaman.",
+            "Men o'zimni yolg'iz va jamiyatdan ajratilgan his qilaman.",
+            "Men boshqa odamlar bilan uzoq vaqtdan beri mustahkam aloqalarni saqlab kelaman.",
+            "Men o'zimni hech kim tushunmaydi deb his qilaman.",
+            "Odamlar meni yordam berishga tayyor inson deb tasvirlashadi.",
+            // 15-21 Avtonomiya
+            "Men o'z qarorlarimni boshqalarning fikrlaridan qat'i nazar, mustaqil qabul qilaman.",
+            "Men ko'pincha boshqa odamlarning fikrlariga moslashishga harakat qilaman.",
+            "Men o'z hayotim ustida to'liq nazoratda ekanligimga ishonaman.",
+            "Men boshqalar tasviri bilan yashashdan charchaganman.",
+            "Men o'z qadriyatlarim asosida yashayman, hatto ular umumiy fikrga zid bo'lsa ham.",
+            "Men o'zimni boshqalar tasdiqlashisiz yashay olmaydigan inson deb bilaman.",
+            "Men o'z fikrlarimga ishonchim komil, hatto ular ko'pchilikka yoqmagan taqdirda ham.",
+            // 22-28 Muhitni boshqarish
+            "Umuman olganda, men yashayotgan vaziyat ustida nazoratdaman deb his qilaman.",
+            "Hayotimni tartibli va rejalashtirilgan o'tkazish menga qiyin.",
+            "Men yashayotgan muhitdan samarali foydalanishni yaxshi bilaman.",
+            "Men hayotimning murakkab talablarini qondirishga qodirman.",
+            "Men ko'pincha hayotimning kundalik ishlari bilan uddalay olmayman.",
+            "Men hayotimni boshqarishda o'zimni qobiliyatsiz his qilaman.",
+            "Men yangi vaziyatlarga tez moslasha olaman va ulardan foydalanaman.",
+            // 29-35 Hayotdan maqsad
+            "Men hayotimning ma'nosi va maqsadi borligiga ishonaman.",
+            "Ba'zi odamlar maqsadsiz yuradi, lekin men ulardan emasman.",
+            "Men o'z hayotimda aniq yo'nalish va maqsad ko'raman.",
+            "Men o'z hayotimning maqsadini topishda qiyinchilik sezganman.",
+            "Men kelajak haqida umidvor va aniq rejalar bilan qarayman.",
+            "Men o'z hayotimning ma'nosini tushunmayman.",
+            "Men o'zimni amalga oshirishim kerak bo'lgan vazifalar bilan yashayotgan deb his qilaman.",
+            // 36-42 Shaxsiy o'sish
+            "Mening uchun hayot yangi tajribalarga ega bo'lish muhimdir.",
+            "Men o'zimni rivojlantirish va o'sish imkoniyatlarini ko'rmayapman.",
+            "Men har doim o'zimni yangi jihatdan kashf etishga intilaman.",
+            "Men o'tgan yillar davomida ko'p narsalarni o'rgandim va rivojlandim.",
+            "Men o'z hayotimda o'sish va rivojlanishni sezmayapman.",
+            "Men o'zimni rivojlantirishga intilishdan charchaganman.",
+            "Yangi tajribalar meni o'zimni tushunishga yordam beradi deb his qilaman."
+        ];
+
+        let current = 0;
+        let scores = new Array(42).fill(null);
+
+        function showQuestion() {
+            document.getElementById("progress").textContent = `Savol ${current + 1} / 42`;
+            document.getElementById("question-text").textContent = questions[current];
+
+            let html = "";
+            const answers = ["To'liq qo'shmayman", "Qo'shmayman", "Biroz qo'shmayman", "Biroz qo'shilaman", "Qo'shilaman", "To'liq qo'shilaman"];
+            for (let i = 0; i < 6; i++) {
+                const selected = scores[current] === i+1 ? "class='selected'" : "";
+                html += `<button ${selected} onclick="selectAnswer(${i+1})">${answers[i]}</button>`;
+            }
+            document.getElementById("options").innerHTML = html;
+
+            document.getElementById("prevBtn").style.display = current === 0 ? "none" : "inline-block";
+        }
+
+        function selectAnswer(value) {
+            scores[current] = value;
+            if (current < 41) {
+                setTimeout(() => {
+                    current++;
+                    showQuestion();
+                }, 350);
+            } else {
+                setTimeout(finishTest, 400);
+            }
+        }
+
+        function prevQuestion() {
+            if (current > 0) {
+                current--;
+                showQuestion();
+            }
+        }
+
+        function finishTest() {
+            const unanswered = scores.filter(s => s === null).length;
+            if (unanswered > 0) {
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) return;
+            }
+
+            // Teskari savollarni hisoblash
+            const revIndices = [1,4,5,8,11,12,15,17,19,21,25,26,31,33,36,39,40]; // 0-based index
+            let adj = scores.map((v, i) => revIndices.includes(i) ? (7 - v) : v);
+
+            let o1 = adj.slice(0,7).reduce((a,b)=>a+(b||0),0);
+            let o2 = adj.slice(7,14).reduce((a,b)=>a+(b||0),0);
+            let o3 = adj.slice(14,21).reduce((a,b)=>a+(b||0),0);
+            let o4 = adj.slice(21,28).reduce((a,b)=>a+(b||0),0);
+            let o5 = adj.slice(28,35).reduce((a,b)=>a+(b||0),0);
+            let o6 = adj.slice(35,42).reduce((a,b)=>a+(b||0),0);
+
+            let jami = o1 + o2 + o3 + o4 + o5 + o6;
+
+            let holat = jami <= 126 ? "🔴 Past umumiy farovonlik" : 
+                        jami <= 189 ? "🟡 O'rtacha umumiy farovonlik" : "🟢 Yuqori umumiy farovonlik";
+
+            let recommendation = jami <= 126 ? 
+                "Psixologik farovonligingiz past darajada. O'zingizga ko'proq vaqt ajrating, yaqinlaringiz bilan muloqotni kuchaytiring va mutaxassis yordamini oling." :
+                jami <= 189 ?
+                "Psixologik farovonligingiz o'rtacha darajada. Hayotdan mamnunlikni oshirish uchun maqsadlaringizni aniqlang va yangi tajribalarga ochiq bo'ling." :
+                "Psixologik farovonligingiz yuqori darajada. Hozirgi holatni saqlang va o'zingizni tabriklang!";
+
+            document.getElementById("question-container").innerHTML = `
+                <h2>Test tugadi!</h2>
+                <h3>Umumiy ball: <b>${jami} / 252</b></h3>
+                <div class="result" style="color:#fff; font-size:1.6rem;">${holat}</div>
+                <div class="recommendation">
+                    <strong>Tavsiya:</strong><br>${recommendation}
+                </div>
+                <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
+            `;
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
