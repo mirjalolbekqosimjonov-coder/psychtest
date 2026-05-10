@@ -36,16 +36,22 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .options button:hover { background: #3498db; color: white; }
+        .options button:hover, .options button.selected { 
+            background: #3498db; 
+            color: white; 
+        }
         .nav-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         .nav-buttons button {
             flex: 1;
             padding: 14px;
             font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
         }
         .finish-btn { background: #27ae60; color: white; font-weight: bold; }
     </style>
@@ -64,7 +70,7 @@
 
         <div class="nav-buttons">
             <button onclick="prevQuestion()" id="prevBtn">← Oldingi</button>
-            <button onclick="nextQuestion()" id="nextBtn">Keyingi →</button>
+            <button onclick="finishTest()" class="finish-btn">Testni yakunlash</button>
         </div>
     </div>
 
@@ -87,7 +93,7 @@
         ];
 
         let current = 0;
-        let scores = new Array(14).fill(0);
+        let scores = new Array(14).fill(null);
 
         function showQuestion() {
             document.getElementById("progress").textContent = `Savol ${current + 1} / 14`;
@@ -96,7 +102,8 @@
             let html = "";
             const answers = ["Hech qachon", "Kamdan-kam", "Ba'zan", "Ko'pincha", "Doim"];
             for (let i = 0; i < 5; i++) {
-                html += `<button onclick="selectAnswer(${i})">${answers[i]}</button>`;
+                const selected = scores[current] === i ? "class='selected'" : "";
+                html += `<button ${selected} onclick="selectAnswer(${i})">${answers[i]}</button>`;
             }
             document.getElementById("options").innerHTML = html;
 
@@ -105,11 +112,16 @@
 
         function selectAnswer(value) {
             scores[current] = value;
+            
+            // Javob tanlanganda avtomatik keyingi savolga o'tish
             if (current < 13) {
-                current++;
-                showQuestion();
+                setTimeout(() => {
+                    current++;
+                    showQuestion();
+                }, 350);
             } else {
-                finishTest();
+                // Oxirgi savol bo'lsa — avtomatik yakunlash
+                setTimeout(finishTest, 400);
             }
         }
 
@@ -121,7 +133,15 @@
         }
 
         function finishTest() {
-            let total = scores.reduce((a, b) => a + b, 0);
+            const unanswered = scores.filter(s => s === null).length;
+            
+            if (unanswered > 0) {
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) {
+                    return;
+                }
+            }
+
+            let total = scores.reduce((a, b) => a + (b || 0), 0);
             let level = "";
             let advice = "";
 
