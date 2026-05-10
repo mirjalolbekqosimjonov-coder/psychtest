@@ -6,15 +6,53 @@
     <title>PSS-14 — Stress Testi</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #3498db, #2c3e50); color: white; min-height: 100vh; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0; padding: 0;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            min-height: 100vh;
+        }
         .container { max-width: 700px; margin: 0 auto; padding: 20px; }
         .header { text-align: center; padding: 20px 0; }
         .progress { text-align: center; font-size: 1.1rem; margin: 10px 0; font-weight: 600; }
-        .question { background: rgba(255,255,255,0.15); padding: 25px; border-radius: 15px; margin: 20px 0; backdrop-filter: blur(10px); }
-        .options button { display: block; width: 100%; padding: 15px; margin: 8px 0; background: rgba(255,255,255,0.95); color: #333; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; transition: 0.3s; }
-        .options button:hover, .options button.selected { background: #3498db; color: white; }
-        .nav-buttons { display: flex; gap: 10px; margin-top: 25px; }
-        .nav-buttons button { flex: 1; padding: 14px; font-size: 1rem; border-radius: 10px; border: none; cursor: pointer; }
+        .question {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .options button:hover, .options button.selected { 
+            background: #3498db; 
+            color: white; 
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .nav-buttons button {
+            flex: 1;
+            padding: 14px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
         .finish-btn { background: #27ae60; color: white; font-weight: bold; }
     </style>
 </head>
@@ -37,14 +75,21 @@
     </div>
 
     <script>
-        const questions = [ /* savollar bir xil */ 
-            "O'tgan oyda kutilmagan voqea sizni qanchalik xafa qildi?", "O'tgan oyda muhim narsalarni boshqara olmayotganingizni his qildingizmi?",
-            "O'tgan oyda asabiy va stressli his qildingizmi?", "O'tgan oyda shaxsiy muammolaringizni hal qilishga qanchalik ishondingiz?",
-            "O'tgan oyda hamma narsa istagan yo'lingizda ketyapti deb his qildingizmi?", "O'tgan oyda barcha ishlarni uddalay olmayotganingizni his qildingizmi?",
-            "O'tgan oyda g'azablantiruvchi vaziyatlarni qanchalik boshqara oldingiz?", "O'tgan oyda vaziyat ustida ekaningizni his qildingizmi?",
-            "O'tgan oyda nazoratdan tashqari narsalar sizni g'azablantirdimi?", "O'tgan oyda qiyinchiliklarni yengib o'ta olmayman deb his qildingizmi?",
-            "O'tgan oyda bajarish kerak bo'lgan ishlar haqida tez-tez o'ylab qoldingizmi?", "O'tgan oyda vaqtingizni boshqarishda qanchalik muvaffaqiyatli bo'ldingiz?",
-            "O'tgan oyda muhim o'zgarishlarni samarali boshqarayotganingizni his qildingizmi?", "O'tgan oyda hayotingiz ustida to'liq nazoratda ekaningizni his qildingizmi?"
+        const questions = [
+            "O'tgan oyda kutilmagan voqea sizni qanchalik xafa qildi?",
+            "O'tgan oyda muhim narsalarni boshqara olmayotganingizni his qildingizmi?",
+            "O'tgan oyda asabiy va stressli his qildingizmi?",
+            "O'tgan oyda shaxsiy muammolaringizni hal qilishga qanchalik ishondingiz?",
+            "O'tgan oyda hamma narsa istagan yo'lingizda ketyapti deb his qildingizmi?",
+            "O'tgan oyda barcha ishlarni uddalay olmayotganingizni his qildingizmi?",
+            "O'tgan oyda g'azablantiruvchi vaziyatlarni qanchalik boshqara oldingiz?",
+            "O'tgan oyda vaziyat ustida ekaningizni his qildingizmi?",
+            "O'tgan oyda nazoratdan tashqari narsalar sizni g'azablantirdimi?",
+            "O'tgan oyda qiyinchiliklarni yengib o'ta olmayman deb his qildingizmi?",
+            "O'tgan oyda bajarish kerak bo'lgan ishlar haqida tez-tez o'ylab qoldingizmi?",
+            "O'tgan oyda vaqtingizni boshqarishda qanchalik muvaffaqiyatli bo'ldingiz?",
+            "O'tgan oyda muhim o'zgarishlarni samarali boshqarayotganingizni his qildingizmi?",
+            "O'tgan oyda hayotingiz ustida to'liq nazoratda ekaningizni his qildingizmi?"
         ];
 
         let current = 0;
@@ -79,8 +124,11 @@
 
         function finishTest() {
             const unanswered = scores.filter(s => s === null).length;
-            if (unanswered > 0 && !confirm(`Siz ${unanswered} ta savolga javob bermadingiz. Yakunlamoqchimisiz?`)) return;
+            if (unanswered > 0) {
+                if (!confirm(`Siz ${unanswered} ta savolga javob bermadingiz.\nShunga qaramay yakunlamoqchimisiz?`)) return;
+            }
 
+            // To'g'ri ball hisoblash
             const reverseIndices = [3,4,6,7,8,9,12,13];
             let total = 0;
             for (let i = 0; i < 14; i++) {
@@ -91,18 +139,22 @@
 
             let level = total <= 13 ? "🟢 Juda past" : total <= 26 ? "🟡 Past" : total <= 39 ? "🟠 O'rtacha" : "🔴 Yuqori";
 
-            // ================== BOTGA YUBORISH ==================
+            // ================== ENG MUHIM QISM ==================
             const resultData = {
                 test: "PSS-14",
                 ball: total,
                 natija: level
             };
 
+            // Telegram WebApp orqali botga yuborish
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.sendData(JSON.stringify(resultData));
+                console.log("Natija botga yuborildi:", resultData);
+            } else {
+                console.log("Telegram WebApp aniqlanmadi");
             }
 
-            // Natijani ko'rsatish
+            // Natijani ekranda ko'rsatish
             document.getElementById("question-container").innerHTML = `
                 <h2>Test tugadi!</h2>
                 <h3>Jami ball: <b>${total} / 56</b></h3>
