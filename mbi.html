@@ -147,19 +147,30 @@
                 }
             }
 
-            let hc = scores.slice(0,9).reduce((a,b)=>a+(b||0),0);
-            let dp = scores.slice(9,14).reduce((a,b)=>a+(b||0),0);
-            let sy = scores.slice(14,22).reduce((a,b)=>a+(b||0),0);
+            let hc = scores.slice(0,9).reduce((a,b) => a + (b||0), 0);
+            let dp = scores.slice(9,14).reduce((a,b) => a + (b||0), 0);
+            let sy = scores.slice(14,22).reduce((a,b) => a + (b||0), 0);
 
             let hc_h = hc <=16 ? "🟢 Past" : hc <=26 ? "🟡 O'rta" : "🔴 Yuqori";
             let dp_h = dp <=6 ? "🟢 Past" : dp <=12 ? "🟡 O'rta" : "🔴 Yuqori";
             let sy_h = sy >=39 ? "🟢 Yuqori (yaxshi)" : sy >=32 ? "🟡 O'rta" : "🔴 Past (muammo)";
 
+            let recommendation = "";
+
+            if (hc >=27 || dp >=13) {
+                recommendation = "Yuqori charchoq aniqlandi. Ish yukini kamaytiring, psixolog yoki mutaxassis bilan maslahatlashing va dam olish kunlarini rejalashtiring.";
+            } else if (hc >=17 || dp >=7) {
+                recommendation = "O'rtacha charchoq darajasi. Har kuni o'zingizga vaqt ajrating, sport bilan shug'ullaning va ish bilan shaxsiy hayot muvozanatini saqlang.";
+            } else {
+                recommendation = "Charchoq darajasi past. Hozirgi muvozanatni saqlang va muntazam dam olishni davom ettiring. Zo'r ishlayapsiz!";
+            }
+
             document.getElementById("question-container").innerHTML = `
                 <h2>Test tugadi!</h2>
                 <h3>Hissiy charchoq: <b>${hc}/54</b> — ${hc_h}</h3>
                 <h3>Depersonalizatsiya: <b>${dp}/30</b> — ${dp_h}</h3>
-                <h3>Shaxsiy yutuq: <b>${sy}/48</b> — ${sy_h}</h3>
+                <h3>Shaxsiy yutuqlar: <b>${sy}/48</b> — ${sy_h}</h3>
+                <p><strong>Tavsiya:</strong> ${recommendation}</p>
                 <button class="finish-btn" onclick="window.location.href='index.html'">Bosh sahifaga qaytish</button>
             `;
         }
